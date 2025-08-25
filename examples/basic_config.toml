@@ -1,0 +1,24 @@
+# wmswitch example configuration
+# Unified config for i3, hyprland, and aerospace
+
+[workspaces.dev]
+number = 1
+monitor = "main"
+
+[workspaces.web] 
+number = 2
+monitor = "main"
+
+[workspaces.comm]
+number = 3
+monitor = "secondary"
+
+[keybinds]
+"mod+1" = "workspace 1"
+"mod+2" = "workspace 2" 
+"mod+3" = "workspace 3"
+"mod+shift+1" = "move container to workspace 1"
+"mod+shift+2" = "move container to workspace 2"
+"mod+shift+3" = "move container to workspace 3"
+"mod+return" = "exec alacritty"
+"mod+d" = "exec rofi -show drun"
