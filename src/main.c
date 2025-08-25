@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include "wmswitch/logging.h"
 #include "wmswitch/toml_config.h"
+#include "wmswitch/generator.h"
+#include "wmswitch/wizard.h"
 
 #define WMSWITCH_VERSION "0.1.0"
 
@@ -14,6 +16,7 @@ static void print_usage(const char *program_name) {
     printf("Commands:\n");
     printf("  generate <config_file>    Generate WM configs from TOML file\n");
     printf("  validate <config_file>    Validate TOML configuration file\n");
+    printf("  wizard [output_file]      Interactive configuration wizard\n");
     printf("  version                   Show version information\n\n");
     printf("Options:\n");
     printf("  -h, --help               Show this help message\n");
@@ -23,6 +26,7 @@ static void print_usage(const char *program_name) {
     printf("  --dry-run               Preview changes without writing files\n");
     printf("  --backup                Create backups of existing configs\n\n");
     printf("Examples:\n");
+    printf("  %s wizard ~/.config/wmswitch/config.toml\n", program_name);
     printf("  %s generate ~/.config/wmswitch/config.toml\n", program_name);
     printf("  %s validate ~/.config/wmswitch/config.toml\n", program_name);
     printf("  %s --dry-run generate config.toml\n", program_name);
@@ -94,12 +98,24 @@ static int generate_configs(const char *config_path, int dry_run, int create_bac
         return 1;
     }
     
-    wmswitch_log_info("TODO: Implement config generation for i3, hyprland, and aerospace");
+    wmswitch_generation_options_t *options = wmswitch_generation_options_create();
+    if (!options) {
+        wmswitch_log_error("Failed to create generation options");
+        wmswitch_parsed_config_free(parsed);
+        wmswitch_config_free(config);
+        return 1;
+    }
     
+    options->dry_run = dry_run;
+    options->create_backups = create_backup;
+    
+    int success = wmswitch_generate_all_configs(parsed, options);
+    
+    wmswitch_generation_options_free(options);
     wmswitch_parsed_config_free(parsed);
     wmswitch_config_free(config);
     
-    return 0;
+    return success ? 0 : 1;
 }
 
 int main(int argc, char *argv[]) {
@@ -161,6 +177,14 @@ int main(int argc, char *argv[]) {
     if (strcmp(command, "help") == 0) {
         print_usage(argv[0]);
         return 0;
+    }
+    
+    if (strcmp(command, "wizard") == 0) {
+        const char *output_path = "wmswitch_config.toml";
+        if (optind + 1 < argc) {
+            output_path = argv[optind + 1];
+        }
+        return wmswitch_run_wizard(output_path) ? 0 : 1;
     }
     
     if (optind + 1 >= argc) {

@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "wmswitch/generator.h"
 #include "wmswitch/logging.h"
 #include <stdio.h>
@@ -5,6 +6,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <limits.h>
 
 int wmswitch_i3_generate(wmswitch_parsed_config_t *config, const char *output_path, int dry_run);
 int wmswitch_hyprland_generate(wmswitch_parsed_config_t *config, const char *output_path, int dry_run);

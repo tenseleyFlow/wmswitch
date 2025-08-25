@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "wmswitch/toml_config.h"
 #include "wmswitch/logging.h"
 #include <stdio.h>
